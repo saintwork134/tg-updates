@@ -13,7 +13,7 @@ pause
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
 "$ErrorActionPreference='Stop';" ^
 "$root=(Resolve-Path '.').Path;" ^
-"$manifestUrl='https://raw.githubusercontent.com/saintwork134/tg-updates/main/remote_manifest.signed';" ^
+"$manifestUrl='https://github.com/saintwork134/tg-updates/raw/refs/heads/main/remote_manifest.signed';" ^
 "Write-Host 'Downloading manifest...';" ^
 "$manifest=(Invoke-WebRequest -Uri $manifestUrl -UseBasicParsing -TimeoutSec 60).Content.Trim();" ^
 "if(-not $manifest.StartsWith('TGMSR-')){ throw 'Bad manifest format.' }" ^
