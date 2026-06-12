@@ -20,14 +20,23 @@ set "LOG=data\manual_update\update.log"
 > "%PS1%" (
   echo $ErrorActionPreference = 'Stop'
   echo $ProgressPreference = 'SilentlyContinue'
+  echo [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   echo $root = ^(Resolve-Path '.'^).Path
   echo $log = Join-Path $root 'data\manual_update\update.log'
   echo function Say^($text^) { $line = '[' + ^(Get-Date -Format 'HH:mm:ss'^) + '] ' + $text; Write-Host $line; Add-Content -LiteralPath $log -Value $line -Encoding UTF8 }
   echo try {
   echo   Set-Content -LiteralPath $log -Value ^('Update started: ' + ^(Get-Date^)^) -Encoding UTF8
-  echo   $manifestUrl = 'https://github.com/saintwork134/tg-updates/raw/refs/heads/main/remote_manifest.signed'
-  echo   Say 'Downloading manifest...'
-  echo   $manifest = ^(Invoke-WebRequest -Uri $manifestUrl -UseBasicParsing -TimeoutSec 60^).Content.Trim^(^)
+  echo   $manifestUrls = @^('https://raw.githubusercontent.com/saintwork134/tg-updates/main/remote_manifest.signed','https://github.com/saintwork134/tg-updates/raw/refs/heads/main/remote_manifest.signed'^)
+  echo   $manifest = $null
+  echo   foreach ^($manifestUrl in $manifestUrls^) {
+  echo     try {
+  echo       Say ^('Downloading manifest: ' + $manifestUrl^)
+  echo       $candidate = ^(Invoke-WebRequest -Uri $manifestUrl -UseBasicParsing -TimeoutSec 60^).Content.Trim^(^)
+  echo       if ^($candidate.StartsWith^('TGMSR-'^)^) { $manifest = $candidate; break }
+  echo       Say 'Manifest response has wrong format.'
+  echo     } catch { Say ^('Manifest URL failed: ' + $_.Exception.Message^) }
+  echo   }
+  echo   if ^(-not $manifest^) { throw 'Could not download valid manifest.' }
   echo   if ^(-not $manifest.StartsWith^('TGMSR-'^)^) { throw 'Bad manifest format.' }
   echo   $encoded = $manifest.Substring^(6^)
   echo   $encoded = $encoded.Replace^('-','+'^).Replace^('_','/'^)
