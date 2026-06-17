@@ -70,6 +70,12 @@ set "LOG=data\manual_update\update.log"
   echo   robocopy $payload $root /E /XD data sessions logs licenses license_portal tools release build dist_nuitka dist_nuitka_standalone github_upload __pycache__ /XF license_private_key.json sender.db *.log /NFL /NDL /NJH /NJS /NP ^| Out-Null
   echo   $sig = Join-Path $payload 'data\app_integrity.sig'
   echo   if ^(Test-Path -LiteralPath $sig^) { New-Item -ItemType Directory -Force -Path ^(Join-Path $root 'data'^) ^| Out-Null; Copy-Item -LiteralPath $sig -Destination ^(Join-Path $root 'data\app_integrity.sig'^) -Force }
+  echo   Say 'Cleaning support-report logs...'
+  echo   $logsDir = Join-Path $root 'logs'
+  echo   if ^(Test-Path -LiteralPath $logsDir^) {
+  echo     Get-ChildItem -LiteralPath $logsDir -File -ErrorAction SilentlyContinue ^| Where-Object { $_.Name -like '*.log' -or $_.Name -like '*.log.*' -or $_.Name -like 'support_report_*.zip' } ^| Remove-Item -Force -ErrorAction SilentlyContinue
+  echo   }
+  echo   Get-ChildItem -LiteralPath $root -Directory -Filter 'tmp_support_report*' -ErrorAction SilentlyContinue ^| Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
   echo   Say ^('Updated to v' + $ver^)
   echo   $exe = Join-Path $root 'dist\TG Mass Sender.exe'
   echo   if ^(Test-Path -LiteralPath $exe^) { Say 'Starting TG Mass Sender...'; Start-Process -FilePath $exe -WorkingDirectory $root } else { Say 'EXE not found after update.' }
