@@ -26,7 +26,7 @@ set "LOG=data\manual_update\update.log"
   echo function Say^($text^) { $line = '[' + ^(Get-Date -Format 'HH:mm:ss'^) + '] ' + $text; Write-Host $line; Add-Content -LiteralPath $log -Value $line -Encoding UTF8 }
   echo try {
   echo   Set-Content -LiteralPath $log -Value ^('Update started: ' + ^(Get-Date^)^) -Encoding UTF8
-  echo   $manifestUrls = @^('https://raw.githubusercontent.com/saintwork134/tg-updates/main/remote_manifest.signed','https://github.com/saintwork134/tg-updates/raw/refs/heads/main/remote_manifest.signed'^)
+  echo   $manifestUrls = @^('https://raw.githubusercontent.com/saintwork134/tg-updates/refs/heads/main/remote_manifest.signed','https://raw.githubusercontent.com/saintwork134/tg-updates/main/remote_manifest.signed','https://github.com/saintwork134/tg-updates/raw/refs/heads/main/remote_manifest.signed'^)
   echo   $manifest = $null
   echo   foreach ^($manifestUrl in $manifestUrls^) {
   echo     try {
@@ -68,8 +68,13 @@ set "LOG=data\manual_update\update.log"
   echo   Get-Process ^| Where-Object { $_.ProcessName -eq 'TG Mass Sender' -or $_.ProcessName -eq 'Start' } ^| Stop-Process -Force -ErrorAction SilentlyContinue
   echo   Say 'Installing files...'
   echo   robocopy $payload $root /E /XD data sessions logs licenses license_portal tools release build dist_nuitka dist_nuitka_standalone github_upload __pycache__ /XF license_private_key.json sender.db *.log /NFL /NDL /NJH /NJS /NP ^| Out-Null
+  echo   $rootExe = Join-Path $root 'TG Mass Sender.exe'
+  echo   $distDir = Join-Path $root 'dist'
+  echo   if ^(Test-Path -LiteralPath $rootExe^) { New-Item -ItemType Directory -Force -Path $distDir ^| Out-Null; Copy-Item -LiteralPath $rootExe -Destination ^(Join-Path $distDir 'TG Mass Sender.exe'^) -Force }
   echo   $sig = Join-Path $payload 'data\app_integrity.sig'
+  echo   $sigRoot = Join-Path $payload 'app_integrity.sig'
   echo   if ^(Test-Path -LiteralPath $sig^) { New-Item -ItemType Directory -Force -Path ^(Join-Path $root 'data'^) ^| Out-Null; Copy-Item -LiteralPath $sig -Destination ^(Join-Path $root 'data\app_integrity.sig'^) -Force }
+  echo   if ^(Test-Path -LiteralPath $sigRoot^) { New-Item -ItemType Directory -Force -Path ^(Join-Path $root 'data'^) ^| Out-Null; Copy-Item -LiteralPath $sigRoot -Destination ^(Join-Path $root 'data\app_integrity.sig'^) -Force }
   echo   Say 'Cleaning support-report logs...'
   echo   $logsDir = Join-Path $root 'logs'
   echo   if ^(Test-Path -LiteralPath $logsDir^) {
