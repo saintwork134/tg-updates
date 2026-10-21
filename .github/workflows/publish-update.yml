@@ -1,0 +1,27 @@
+name: Publish signed update
+
+on:
+  push:
+    branches:
+      - publish/v2.8.52
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-signed-update
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify and publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 .release/publish.py

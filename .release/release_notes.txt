@@ -1,0 +1,14 @@
+TG Mass Sender v2.8.52
+
+- Updated Telethon to 1.45.0 (Telegram API layer 229).
+- Status checks read Telegram's account freeze configuration.
+- Session files are locked across processes and asynchronous operations.
+- A status check preserves manually disabled accounts and known sending restrictions.
+- RPC classification separates account bans, frozen accounts, FloodWait, chat permissions and network errors.
+- Long FloodWait durations are never capped below Telegram's required wait.
+- Fixed Windows x64 memory counters and loss of buffered GUI log messages.
+- Fixed a statistics refresh crash in the problem-account filter.
+- Database flushes have a real deadline; transient SQLite locks no longer kill the writer.
+- Support reports read bounded log tails, omit duplicate log files and record dependency versions.
+
+Server-side restrictions and outages cannot be removed by updating the app.
