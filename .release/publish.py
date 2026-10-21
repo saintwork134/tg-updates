@@ -32,6 +32,15 @@ def sha256(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def find_release(api_root, tag):
+    # Drafts do not necessarily have a Git tag yet and are absent from /releases/tags.
+    matches = [release for release in gh("api", api_root + "/releases?per_page=100")
+               if release["tag_name"] == tag]
+    if len(matches) > 1:
+        raise RuntimeError("Multiple releases use the requested tag")
+    return matches[0] if matches else None
+
+
 def main():
     meta = json.loads((ROOT / "release.json").read_text(encoding="utf-8"))
     repo = meta["repository"]
@@ -58,7 +67,7 @@ def main():
             return
         raise RuntimeError("Main manifest changed; refresh and re-sign locally before publishing")
 
-    release = gh("api", api_root + "/releases/tags/" + tag, allow_missing=True)
+    release = find_release(api_root, tag)
     if release is None:
         subprocess.run([
             "gh", "release", "create", tag, str(asset), "--repo", repo,
@@ -73,7 +82,9 @@ def main():
             subprocess.run(["gh", "release", "upload", tag, str(asset), "--repo", repo],
                            check=True, timeout=300)
 
-    release = gh("api", api_root + "/releases/tags/" + tag)
+    release = find_release(api_root, tag)
+    if release is None:
+        raise RuntimeError("Release was not found after upload")
     matching = [item for item in release["assets"] if item["name"] == asset.name]
     if len(matching) != 1:
         raise RuntimeError("Expected exactly one update asset")
