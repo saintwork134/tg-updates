@@ -1,0 +1,3 @@
+.release/*.signed text eol=lf
+.release/*.json text eol=lf
+.release/*.zip -text
