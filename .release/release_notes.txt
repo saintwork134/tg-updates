@@ -1,0 +1,19 @@
+TG Mass Sender v2.8.53
+
+- Authorization checks distinguish revoked sessions, bans, freeze and FloodWait.
+- Checking or reusing an account no longer resets manual rest or manual disable.
+- GUI and bot authorization share the session-file lock and bounded network waits.
+- An ambiguous send timeout is not counted as a confirmed send.
+- Accepted sends retain their count and timestamp even if deletion checks fail or the message is deleted.
+- Stop cancels active engine tasks, network calls and pending deletion checks.
+- Shutdown waits for engine/session cleanup and queued database writes.
+- Media payloads use temporary disk files; at most four simultaneous media transfers per engine.
+- Account snapshots are computed off the Tk thread using an independent read-only database connection.
+- Account table updates preserve row identities, selection and scroll position.
+- Removed forced full garbage collection after each high-scale cycle.
+- Updates and rollback only touch an explicit application-file allowlist, not customer databases or sessions.
+- Installer waits for shutdown, verifies staged and installed hashes, and stops on failure.
+
+The sent counter means Telegram returned a message id, not recipient delivery or reading.
+Existing accepted/deleted/check-failed records are migrated without removing history.
+Server-side restrictions remain enforced. Live long-running load acceptance is still required.
