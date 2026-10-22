@@ -1,9 +1,9 @@
 {
   "repository": "saintwork134/tg-updates",
-  "version": "2.8.53",
-  "asset_name": "TG_Mass_Sender_v2.8.53_update.zip",
-  "asset_size": 31249455,
-  "asset_sha256": "95a8badafe85c2ef328e166acdf32d0e4c1fb484938aeb14fe6ad81beb77a506",
-  "manifest_sha256": "ad0cf585992b3287d1f3c6b61d0de3d435d6643a960aca47bbaf3920e8e3726b",
-  "base_manifest_sha": "6a62fab0b83843f5906058e0aab6edf1b47398a2"
+  "version": "2.8.54",
+  "asset_name": "TG_Mass_Sender_v2.8.54_update.zip",
+  "asset_size": 31253839,
+  "asset_sha256": "6ff604b4fd8f11db3ec1725711daca3b7c2e02cdd9ae74a3b1e30bff1c0998af",
+  "manifest_sha256": "8c4cfbf4e32296f1cac1c5946ac65f5f5f2645ccf0adfbd84d790671811fdb67",
+  "base_manifest_sha": "b2dec3e75831301ca49e64c6fde3242d9bbef399"
 }
