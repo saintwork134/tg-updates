@@ -1,23 +1,34 @@
-TG Mass Sender v2.8.54
+TG Mass Sender v2.8.55
 
-- Daily limits expire at the next calendar midnight, not 24 hours after the limit.
-- A running cycle refreshes its day baseline after midnight.
-- Startup keeps daily/hourly limited accounts in the scheduler until their rest expires.
-- Partial or absent Telegram profiles cannot overwrite Premium as absent.
-- Invalid database statements no longer discard valid neighbouring queued writes.
-- Storage failures retain the in-flight batch; flush no longer reports rejected writes as successful.
-- Failed immediate database transactions roll back before another operation uses the connection.
-- Proxy prechecks run outside the asyncio event loop; failed sockets close deterministically.
-- Connection and authorization checks in cycles have explicit deadlines.
-- Recovered FloodWait clears only its own automatic rest, preserving later manual decisions.
-- Retry media operations use the same global resource pool as normal operations.
-- Partial, busy and cancelled status checks are not logged as full success.
-- Permission and deletion-check errors include RPC/error types and codes.
-- Resource diagnostics include per-client update backlog, entity cache and task counts.
-- Removed mutation of Telethon private caches during disconnect.
-- Calendar rules are isolated in a small, independently tested module.
-- Packaging runs regression tests and the isolated GUI smoke check, even with --skip-build.
+Corrections:
+- A fresh activity label no longer hides an account with failed attempts and no accepted sends.
+- Low-activity detection respects computed warnings even when an older base severity is OK.
+- Summary warnings and detailed account diagnostics use the same diagnostic snapshot.
+- Sending-only clients opt out of unsolicited SDK update streams; monitoring/auth defaults are unchanged.
+- Network recovery attempts are counted independently of account errors, without double counting.
+- An exhausted connection recovery ends the cycle with a network status, not a generic three-hour account rest.
+- Network retries use bounded backoff (60, 120, 240, 480, 600 seconds) without changing stored account restrictions.
+- Initial and refreshed dialog lists and Saved Messages retrieval have 30-second deadlines.
+- Account restriction errors from dialog refresh propagate to the existing account-state handler.
+- Session guards and client registry entries are released even if cleanup is cancelled again.
+- Verified bans, session revocations, Premium state and manual rest keep precedence over network status.
 
-Validation uses fake clients, temporary databases and simulated calendar time.
-No live customer messages are sent by tests. Real 24-hour memory profiling remains necessary.
-This release does not replace the entire session architecture with persistent account actors.
+Diagnostics:
+- Each operation has a run id, operation id, hashed account reference, cycle, phase and elapsed time.
+- Operation timestamps explicitly use UTC; reports identify the host-log and database timezones.
+- Errors include exception type, numeric RPC/OS codes, recognized account state and server wait seconds.
+- Message ids and chat ids correlate acceptance and deletion checks; message contents are never recorded by telemetry.
+- New telemetry omits credentials and arbitrary exception/request text.
+- Operation counters are aggregated; active detail storage is capped at 256 entries without per-message history.
+- Effective engine settings and effective per-chat delays are recorded separately from edited UI settings.
+- Resource samples include working set, peak working set, private memory, CPU time, loop lag and per-client queues.
+- A protective stop reacts to update queues of 10000 entries or excessive process memory.
+  The sampled memory threshold is 25 percent of installed RAM, with a 1-4 GiB threshold range.
+  This is a protective stop, not a hard allocator ceiling; automatic restart is not performed.
+- Support reports include operation_diagnostics.json and report_scope.json, including truncated log indicators.
+- Reports capture presence, pacing, typing, batching and startup-check settings, without authentication secrets.
+- Account CSV/JSON includes a trace reference matching operation logs.
+- Log rotation during report collection does not fail the whole export.
+
+Validation is offline with fake clients and temporary databases. Telegram FloodWait and other server restrictions
+remain enforced. A real long-running resource test is still required before claiming that all memory growth is resolved.
